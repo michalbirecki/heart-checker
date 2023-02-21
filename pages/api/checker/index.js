@@ -1,24 +1,76 @@
-import { sendEmail } from "../../../utils/sendEmail";
+import { heartRateLogic } from "../../../public/utils/heartRateLogic";
 
 export default async function handler(req, res) {
+  const axios = require("axios").default;
   if (req.method === "POST") {
-    // get data from request body
+    // get data from iPhone health from POST request body
+    const { data } = req.body;
 
-    // get headers from request. If text, convert to JSON
-    const headers = JSON.stringify(req.headers);
+    // for now, use sampleData json from the same folder as this file
 
-    const data = JSON.stringify(req.body);
+    /// test data
+    const sampleData = require("./sampleData.json");
+    const alertData = require("./alertData.json");
+    /// end of test data
 
-    // comsole log data
+    const isOk = await heartRateLogic(alertData);
 
-    // send data by email
+    if (isOk === true) {
+      res.status(200).json({ message: "Heart rate was within bounds" });
+    }
+    if (isOk === null) {
+      res
+        .status(200)
+        .json({ message: "The POST request body was empty", isOk: null });
+    }
+    if (isOk === false) {
+      // const PAGERDUTY_API_KEY = process.env.PAGERDUTY_API_KEY;
 
-    await sendEmail(data, headers);
+      const options = {
+        method: "POST",
+        url: "https://api.pagerduty.com/incidents",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/vnd.pagerduty+json;version=2",
+          From: "",
+          Authorization: `Token token=${PAGERDUTY_API_KEY}`,
+          //Authorization: "Token token=y_NbAkKc66ryYTWUXYEu", // this is correct for testing
+        },
+        data: {
+          incident: {
+            type: "incident",
+            title:
+              "In the last 5 minutes, Mikes heart went below 40, or his heart went over 175. Call him immediately.",
+            service: {
+              id: process.env.PAGERDUTY_SERVICE_ID,
+              type: "service",
+            },
+          },
+        },
+      };
 
-    res.status(200).json({ message: "POST request received", data: data });
+      axios
+        .request(options)
+        .then(function (response) {
+          // check if response is 201
+
+          res.status(200).json({
+            message:
+              "Heart rate was OUT OF BOUNDS. Pagerduty notified successfully",
+          });
+        })
+        .catch(function (error) {
+          console.error(error.message);
+
+          res.status(400).json({
+            message:
+              "Heart rate was OUT OF BOUNDS. Pagerduty notification failed.",
+          });
+        });
+    }
+
+    console.log("isOk", isOk);
   } else {
-    // if GET request
-    // send data by email
-    res.status(200).json({ message: "GET request received" });
+    res.status(200).json({ message: "Did not receive POST request" });
   }
 }
