@@ -24,7 +24,7 @@ export default async function handler(req, res) {
         .json({ message: "The POST request body was empty", isOk: null });
     }
     if (isOk === false) {
-      // const PAGERDUTY_API_KEY = process.env.PAGERDUTY_API_KEY;
+      const PAGERDUTY_API_KEY = process.env.PAGERDUTY_API_KEY;
 
       const options = {
         method: "POST",
