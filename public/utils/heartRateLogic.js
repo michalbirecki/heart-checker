@@ -84,10 +84,11 @@ const checkAllHeartRates = (data) => {
 // If body data is not corerct, return null
 export const heartRateLogic = (realData) => {
   if (
-    realData.length === 0 ||
+    realData?.length === 0 ||
     realData === undefined ||
     realData === null ||
-    realData === ""
+    realData === "" ||
+    realData == {}
   ) {
     return null;
   }
