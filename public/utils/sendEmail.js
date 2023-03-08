@@ -4,7 +4,8 @@ export const sendEmail = async (data, headers) => {
   console.log("email data", data);
   const userEMail = "revenuelegion@gmail.com";
 
-  const emailPassword = process.env.SMTP_PASSWORD;
+  //const emailPassword = process.env.SMTP_PASSWORD;
+  const emailPassword = "$2@^3G_$xjI_";
 
   // try converting body and heardr to JSON
   let bodyStr, headersStr;
