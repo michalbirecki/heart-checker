@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
     // psre json data
 
-    sendEmail(data, req.headers);
+    await sendEmail(data, req.headers);
     const isOk = await heartRateLogic(data);
 
     if (isOk === true) {
