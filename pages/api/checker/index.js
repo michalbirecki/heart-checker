@@ -1,20 +1,33 @@
 import { heartRateLogic } from "../../../public/utils/heartRateLogic";
+import { sendEmail } from "../../../public/utils/sendEmail";
 
 export default async function handler(req, res) {
   const axios = require("axios").default;
+
+  let sampleData = require("./sampleData.json");
+
   if (req.method === "POST") {
     // get data from iPhone health from POST request body
-    const { data } = req.body;
+    console.log("req.method", req.method);
+    // console.log("req", req);
+    const data = req.body;
+    // const data = sampleData;
 
+    console.log("data from POST request", data);
+
+    // psre json data
+
+    sendEmail(data, req.headers);
     const isOk = await heartRateLogic(data);
 
     if (isOk === true) {
       res.status(200).json({ message: "Heart rate was within bounds" });
     }
     if (isOk === null) {
-      res
-        .status(200)
-        .json({ message: "The POST request body was empty", isOk: null });
+      res.status(200).json({
+        message: "There was an error somwhere in the function heartRateLogic",
+        isOk: isOk,
+      });
     }
     if (isOk === false) {
       const options = {
@@ -59,6 +72,8 @@ export default async function handler(req, res) {
           });
         });
     }
+
+    res.status(500).json({ message: isOk });
 
     console.log("isOk", isOk);
   } else {

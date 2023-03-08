@@ -1,8 +1,11 @@
+import axios from "axios";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
+  // test json const
+  const testJson = { message: "your test is here" };
   return (
     <div className={styles.container}>
       <Head>
@@ -15,6 +18,17 @@ export default function Home() {
         <h1 className={styles.title}>
           Welcome to <a href="">Heart Checker</a>
         </h1>
+
+        <button
+          onClick={async () => {
+            // use axios to send post to /api/checker
+            const response = await axios.post("/api/test", testJson);
+            console.log("response", response);
+          }}
+          // console.log("axios", axios);
+        >
+          Test API
+        </button>
 
         {/* <p className={styles.description}>
           Latest heart rate: <b>75</b>

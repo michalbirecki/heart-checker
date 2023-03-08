@@ -94,13 +94,31 @@ export const heartRateLogic = (realData) => {
   }
 
   // make data intop properly configured JSON
-  const properJSON = combinedObject(realData);
-
+  let properJSON;
+  try {
+    properJSON = combinedObject(realData);
+  } catch (error) {
+    return { error: "error parsing data in function combinedObject" };
+  }
   // filter data where dates are less than five minutes from latest one
-  const filteredData = lateFiveMinutesData(properJSON);
+  let filteredData;
 
-  // Run logic to check if heart rate is within range
-  const isEverythingOk = checkAllHeartRates(filteredData);
+  try {
+    filteredData = lateFiveMinutesData(properJSON);
+  } catch (error) {
+    return { error: "error filtering data in function lateFiveMinutesData" };
+  }
+
+  let isEverythingOk;
+
+  try {
+    // Run logic to check if heart rate is within range
+    isEverythingOk = checkAllHeartRates(filteredData);
+  } catch (error) {
+    return {
+      error: "error checking heart rates in function checkAllHeartRates",
+    };
+  }
 
   return isEverythingOk;
 };
