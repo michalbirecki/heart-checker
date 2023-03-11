@@ -2,20 +2,27 @@ import { heartRateLogic } from "../../../public/utils/heartRateLogic";
 
 export default async function handler(req, res) {
   const axios = require("axios").default;
+
   if (req.method === "POST") {
     // get data from iPhone health from POST request body
-    const { data } = req.body;
 
+    const data = req.body;
+
+    // await sendEmail(data, req.headers);
     const isOk = await heartRateLogic(data);
 
     if (isOk === true) {
-      res.status(200).json({ message: "Heart rate was within bounds" });
-    }
-    if (isOk === null) {
       res
         .status(200)
-        .json({ message: "The POST request body was empty", isOk: null });
+        .json({ message: "OK. Heart rate was within bounds", isOk: isOk });
     }
+    if (isOk === null) {
+      res.status(200).json({
+        message: "There was an error somwhere in the function heartRateLogic",
+        isOk: isOk,
+      });
+    }
+
     if (isOk === false) {
       const options = {
         method: "POST",
@@ -48,6 +55,7 @@ export default async function handler(req, res) {
           res.status(200).json({
             message:
               "Heart rate was OUT OF BOUNDS. Pagerduty notified successfully",
+            isOk: false,
           });
         })
         .catch(function (error) {
@@ -56,11 +64,12 @@ export default async function handler(req, res) {
           res.status(400).json({
             message:
               "Heart rate was OUT OF BOUNDS. Pagerduty notification failed.",
+            isOk: false,
           });
         });
     }
 
-    console.log("isOk", isOk);
+    res.status(500).json({ message: isOk });
   } else {
     res.status(200).json({ message: "Did not receive POST request" });
   }

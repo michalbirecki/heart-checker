@@ -29,7 +29,10 @@ const parsedHeartRates = (data) => {
 };
 
 const combinedObject = (data) => {
-  const datesArray = parseDates(data.date[0]);
+  // console.log("should work with 2", data.date);
+  // console.log("should work with 1", data.date[0]);
+
+  const datesArray = parseDates(data.date);
 
   const heartArray = parsedHeartRates(data.heart);
 
@@ -47,8 +50,6 @@ const lateFiveMinutesData = (data) => {
   dayjs.extend(minMax);
   const filteredData = (data) => {
     const latestDate = dayjs.max(data.map((item) => item.date));
-
-    console.log("latestDate", latestDate);
 
     const fiveMinutesAgo = latestDate.subtract(5, "minute");
     const filtered = data.filter((item) => {
@@ -72,6 +73,11 @@ const checkSingleHeartRate = (item) => {
 const checkAllHeartRates = (data) => {
   // gets single object and checks if heart rate is inside range
 
+  // if data is [] return message
+  if (data.length === 0) {
+    return { message: "Data received, but none for the last 5 minutes" };
+  }
+
   const allHeartRates = data.map((item) => {
     return checkSingleHeartRate(item);
   });
@@ -94,13 +100,32 @@ export const heartRateLogic = (realData) => {
   }
 
   // make data intop properly configured JSON
-  const properJSON = combinedObject(realData);
+  let properJSON;
+  try {
+    properJSON = combinedObject(realData);
+  } catch (error) {
+    return { error: "error parsing data in function combinedObject" };
+  }
 
   // filter data where dates are less than five minutes from latest one
-  const filteredData = lateFiveMinutesData(properJSON);
+  let filteredData;
 
-  // Run logic to check if heart rate is within range
-  const isEverythingOk = checkAllHeartRates(filteredData);
+  try {
+    filteredData = lateFiveMinutesData(properJSON);
+  } catch (error) {
+    return { error: "error filtering data in function lateFiveMinutesData" };
+  }
+
+  let isEverythingOk;
+
+  try {
+    // Run logic to check if heart rate is within range
+    isEverythingOk = checkAllHeartRates(filteredData);
+  } catch (error) {
+    return {
+      error: "error checking heart rates in function checkAllHeartRates",
+    };
+  }
 
   return isEverythingOk;
 };
