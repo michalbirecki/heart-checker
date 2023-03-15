@@ -84,10 +84,10 @@ export default async function handler(req, res) {
     //     });
     // }
 
-    res.status(200).json({
-      isOk: isOk,
-      message: "None of the cinditions triggered, so function simply returned",
-    }); // out of bounds gave this. something must have failed in
+    // res.status(200).json({
+    //   isOk: isOk,
+    //   message: "None of the cinditions triggered, so function simply returned",
+    // }); // out of bounds gave this. something must have failed in
   } else {
     res.status(200).json({ message: "Did not receive POST request" });
   }
