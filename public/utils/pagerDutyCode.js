@@ -7,7 +7,7 @@ export const triggerPagerDuty = async (res) => {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/vnd.pagerduty+json;version=2",
-      From: "",
+      From: "mbirecki@contrastweb.com",
       Authorization: `Token token=${process.env.PAGERDUTY_API_KEY}`,
 
       //Authorization: "Token token=u+_XG8nBa9JqCu3GzcJQ",
