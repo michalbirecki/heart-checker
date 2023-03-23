@@ -63,7 +63,7 @@ const lateFiveMinutesData = (data) => {
 
 const checkSingleHeartRate = (item) => {
   const maxHeartRate = 185;
-  const minHeartRate = 70;
+  const minHeartRate = 40;
 
   const isOk = item.heartRate >= minHeartRate && item.heartRate <= maxHeartRate;
 
